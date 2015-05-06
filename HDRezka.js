@@ -1,4 +1,5 @@
 (function(plugin) {
+    //ver 0.5.1
     var plugin_info = plugin.getDescriptor();
     var PREFIX = plugin_info.id;
     var BASE_URL = "http://hdrezka.tv";
