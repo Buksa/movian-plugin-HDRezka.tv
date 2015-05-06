@@ -1,5 +1,4 @@
 (function(plugin) {
-    //ver 0.5
     var plugin_info = plugin.getDescriptor();
     var PREFIX = plugin_info.id;
     var BASE_URL = "http://hdrezka.tv";
@@ -390,7 +389,10 @@
             }).toString();
             p("source:" + BASE_URL + "/engine/ajax/getvideo.php");
             v = JSON.parse(v);
-            data.url = /(http:[^"]+)/.exec(v.link)[1];
+            p(v.link)
+            if (/(http:[^"]+)/.exec(v.link)) {
+                data.url = /(http:[^"]+)/.exec(v.link)[1];
+            } else data.url = v.link
             p(data.url);
         }
         //vk.com
