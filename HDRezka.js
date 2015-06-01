@@ -1,8 +1,8 @@
 (function(plugin) {
-    //ver 0.5.1
+    //ver 0.5.2
     var plugin_info = plugin.getDescriptor();
     var PREFIX = plugin_info.id;
-    var BASE_URL = "http://hdrezka.tv";
+    var BASE_URL = "http://hdrezka.me";
     var logo = plugin.path + "logo.png";
     var tos = "The developer has no affiliation with the sites what so ever.\n";
     tos += "Nor does he receive money or any other kind of benefits for them.\n\n";
@@ -47,11 +47,17 @@
             }
         }
         var v, re, m, i;
-        re = /data-url="http:\/\/hdrezka.tv(.+?)"[\S\s]+?<img src="([^"]+)[\S\s]+?item-link[\S\s]+?">([^<]+)[\S\s]+?<div>(.+?)<\/div>/g;
+        
+        start_block(page, "/films/", "\u0424\u0438\u043b\u044c\u043c\u044b")
+        start_block(page, "/series/", "\u0421\u0435\u0440\u0438\u0430\u043b\u044b")
+        start_block(page, "/cartoons/", "\u041c\u0443\u043b\u044c\u0442\u0444\u0438\u043b\u044c\u043c\u044b")
+        function start_block(page, href, title) {
+        re = /data-url="http:\/\/hdrezka.me(.+?)"[\S\s]+?<img src="([^"]+)[\S\s]+?item-link[\S\s]+?">([^<]+)[\S\s]+?<div>(.+?)<\/div>/g;
         page.appendItem("", "separator", {
-            title: new showtime.RichText("\u0424\u0438\u043b\u044c\u043c\u044b")
+            title: new showtime.RichText(title)
         });
-        v = showtime.httpReq(BASE_URL + "/films/").toString();
+        v = showtime.httpReq(BASE_URL + href).toString();
+        p(v)
         m = re.execAll(v);
         for (i = 0; i < 7; i++) {
             page.appendItem(PREFIX + ":page:" + m[i][1], "video", {
@@ -61,44 +67,12 @@
                 year: +match(/([0-9]+(?:\.[0-9]*)?)/, m[i][4], 1)
             });
         }
-        page.appendItem(PREFIX + ":sort:" + "/films/", "directory", {
+        page.appendItem(PREFIX + ":sort:" + href, "directory", {
             title: "\u0414\u0430\u043b\u044c\u0448\u0435 \u0431\u043e\u043b\u044c\u0448\u0435" + " \u25ba",
             icon: logo
         });
-        page.appendItem("", "separator", {
-            title: new showtime.RichText("\u0421\u0435\u0440\u0438\u0430\u043b\u044b")
-        });
-        v = showtime.httpReq(BASE_URL + "/series/").toString();
-        m = re.execAll(v);
-        for (i = 0; i < 7; i++) {
-            page.appendItem(PREFIX + ":page:" + m[i][1], "video", {
-                title: new showtime.RichText(m[i][3]),
-                description: new showtime.RichText(m[i][4]),
-                icon: BASE_URL + m[i][2],
-                year: +match(/([0-9]+(?:\.[0-9]*)?)/, m[i][4], 1)
-            });
         }
-        page.appendItem(PREFIX + ":sort:" + "/series/", "directory", {
-            title: "\u0414\u0430\u043b\u044c\u0448\u0435 \u0431\u043e\u043b\u044c\u0448\u0435" + " \u25ba",
-            icon: logo
-        });
-        page.appendItem("", "separator", {
-            title: new showtime.RichText("\u041c\u0443\u043b\u044c\u0442\u0444\u0438\u043b\u044c\u043c\u044b")
-        });
-        v = showtime.httpReq(BASE_URL + "/cartoons/").toString();
-        m = re.execAll(v);
-        for (i = 0; i < 7; i++) {
-            page.appendItem(PREFIX + ":page:" + m[i][1], "video", {
-                title: new showtime.RichText(m[i][3]),
-                description: new showtime.RichText(m[i][4]),
-                icon: BASE_URL + m[i][2],
-                year: +match(/([0-9]+(?:\.[0-9]*)?)/, m[i][4], 1)
-            });
-        }
-        page.appendItem(PREFIX + ":sort:" + "/cartoons/", "directory", {
-            title: "\u0414\u0430\u043b\u044c\u0448\u0435 \u0431\u043e\u043b\u044c\u0448\u0435" + " \u25ba",
-            icon: logo
-        });
+        
         page.type = "directory";
         page.loading = false;
     }
@@ -125,11 +99,11 @@
             }).toString();
             p(BASE_URL + link + "page/" + offset + "/");
             var has_nextpage = false;
-            var m = v.match(/href="http:\/\/hdrezka.tv(.+?)"><span class="b-navigation__next i-sprt">.*<\/span><\/a>/);
+            var m = v.match(/href="http:\/\/hdrezka.me(.+?)"><span class="b-navigation__next i-sprt">.*<\/span><\/a>/);
             if (m) {
                 has_nextpage = true;
             }
-            re = /data-url="http:\/\/hdrezka.tv(.+?)"[\S\s]+?<img src="([^"]+)[\S\s]+?item-link[\S\s]+?">([^<]+)[\S\s]+?<div>(.+?)<\/div>/g;
+            re = /data-url="http:\/\/hdrezka.me(.+?)"[\S\s]+?<img src="([^"]+)[\S\s]+?item-link[\S\s]+?">([^<]+)[\S\s]+?<div>(.+?)<\/div>/g;
             m = re.execAll(v);
             for (var i = 0; i < m.length; i++) {
                 page.appendItem(PREFIX + ":page:" + m[i][1], "video", {
@@ -166,7 +140,7 @@
             data.eng_title = md.eng_title;
             md.icon = match(/<img itemprop="image" src="(.+?)"/, v, 1);
             md.rating = +match(/<span class="b-post__info_rates imdb">IMDb:[\S\s]+?([0-9]+(?:\.[0-9]*)?)<\/span>/, v, 1);
-            md.year = +match(/http:\/\/hdrezka.tv\/year\/(\d{4})/, v, 1);
+            md.year = +match(/http:\/\/hdrezka.me\/year\/(\d{4})/, v, 1);
             data.year = md.year ? md.year : 0;
             md.slogan = match(/>\u0421\u043b\u043e\u0433\u0430\u043d:<\/td>[\S\s]+?<td>(.+?)<\/td>/, v, 1);
             md.rel_date = match(/>\u0414\u0430\u0442\u0430 \u0432\u044b\u0445\u043e\u0434\u0430:<\/td>[\S\s]+?<td>(.+?)<\/td>/, v, 1);
@@ -296,7 +270,7 @@
                     title: new showtime.RichText(sidetitle.replace(" \u0431\u0435\u0441\u043f\u043b\u0430\u0442\u043d\u044b\u0435", ""))
                 });
                 re =
-                    /<div class="b-content__inline_item".+?data-id="([^"]+).+?data-url="http:\/\/hdrezka.tv([^"]+).+?img src="([^"]+).+?html">([^<]+).+?class="misc">([^<]+)/g;
+                    /<div class="b-content__inline_item".+?data-id="([^"]+).+?data-url="http:\/\/hdrezka.me([^"]+).+?img src="([^"]+).+?html">([^<]+).+?class="misc">([^<]+)/g;
                 m = re.execAll(v.match(/<div class="b-sidelist">.*<\/div>/));
                 for (i = 0; i < m.length; i++) {
                     page.appendItem(PREFIX + ":page:" + m[i][2], "video", {
@@ -473,6 +447,14 @@
                 });
             }
         }
+        if (data.url.indexOf('youtube.com/embed/') !==-1 ) {
+            p(/www.youtube.com\/embed\/([^"]+)/.exec(data.url)[1])
+            page.appendItem('youtube:video:simple:' + escape(page.metadata.title + " - " + 'Трейлер') + ":" + /www.youtube.com\/embed\/([^"]+)/.exec(data.url)[1], "video", {
+                    title: 'Трейлер: ' + (data.eng_title ? data.eng_title : data.title)
+
+                });
+            //code
+        }
         page.appendItem("search:" + (data.eng_title ? data.eng_title : data.title), "directory", {
             title: "Try Search for: " + (data.eng_title ? data.eng_title : data.title)
         });
@@ -494,7 +476,7 @@
                     q: query
                 }
             });
-            re = /data-url="http:\/\/hdrezka.tv(.+?)"[\S\s]+?<img src="([^"]+)[\S\s]+?item-link[\S\s]+?">([^<]+)[\S\s]+?<div>(.+?)<\/div>/g;
+            re = /data-url="http:\/\/hdrezka.me(.+?)"[\S\s]+?<img src="([^"]+)[\S\s]+?item-link[\S\s]+?">([^<]+)[\S\s]+?<div>(.+?)<\/div>/g;
             m = re.execAll(v);
             for (i = 0; i < m.length; i++) {
                 page.appendItem(PREFIX + ":page:" + m[i][1], "video", {
