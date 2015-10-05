@@ -1,5 +1,5 @@
 (function(plugin) {
-    //ver 0.5.3
+    //ver 0.5.4
     var plugin_info = plugin.getDescriptor();
     var PREFIX = plugin_info.id;
     var BASE_URL = "http://hdrezka.me";
@@ -128,7 +128,11 @@
         page.loading = false;
         var i, v, item, re, re2, m, m2;
         p(BASE_URL + link);
-        v = showtime.httpReq(BASE_URL + link).toString();
+        v = showtime.httpReq(BASE_URL + link, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.93 Safari/537.36 OPR/32.0.1948.69'
+            }
+        }).toString();
         p(v);
         try {
             var md = {};
@@ -168,9 +172,26 @@
                     title: "\u043d\u0430\u0439\u0442\u0438 \u0442\u0440\u0435\u0439\u043b\u0435\u0440 \u043d\u0430 YouTube"
                 });
             }
+
             //<iframe id="cdn-player" src="http://cdn2hd.xyz/serial/7df3102bd447c75c7e71e3ef219faf23/iframe?nocontrols=1&amp;season=1&amp;episode=1" width="640" height="360" frameborder="0" allowfullscreen=""></iframe>
-            player = /<iframe id="cdn-player" src="([^"]+)/.exec(v)[1]
-            print(player)
+            if (/<iframe id="cdn-player" src="([^"]+)/.test(v)) {
+                player = /<iframe id="cdn-player" src="([^"]+)/.exec(v)
+                p(player)
+            } else {
+                player = JSON.parse(showtime.httpReq(BASE_URL + "/engine/ajax/getvideo.php", {
+                    headers: {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.93 Safari/537.36 OPR/32.0.1948.69'
+                    },
+                    postdata: {
+                        id: data.id
+                    }
+                }).toString()).link;
+                p(player) // = JSON.parse(player).link;
+                //if (/(http.*?iframe)/.test(player)) player = player.match(/(http.*?iframe)/)[1] 
+            }
+
+
+
             // player = /engine/ajax/getvideo.php
             //var html = showtime.httpReq(moonwalk, {
             //        method: "GET",
@@ -386,7 +407,7 @@
             p("source:" + BASE_URL + "/engine/ajax/getvideo.php");
             v = JSON.parse(v);
             p(v.link)
-            if (/(http:[^"]+)/.exec(v.link)) {
+            if (/(http:[^"]+)/.test(v.link)) {
                 data.url = /(http:[^"]+)/.exec(v.link)[1];
             } else data.url = v.link
             p(data.url);
