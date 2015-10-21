@@ -1,5 +1,5 @@
 (function(plugin) {
-    //ver 0.5.4
+    //ver 0.5.5
     var plugin_info = plugin.getDescriptor();
     var PREFIX = plugin_info.id;
     var BASE_URL = "http://hdrezka.me";
@@ -454,17 +454,41 @@
             var postdata = {};
             postdata = /post\('\/sessions\/create_session', \{([^\}]+)/.exec(v)[1];
             p(postdata);
+            //           $.post('/sessions/create_session', {
+            //  partner: 157,
+            //  d_id: 15820,
+            //  video_token: 'd7774760e49fa5ca',
+            //  content_type: 'movie',
+            //  access_key: '0fb74eb4b2c16d45fe',
+            //  cd: condition_detected ? 1 : 0
+            //}).success(function(video_url)
+
+            //      xhr.setRequestHeader('X-MOON-EXPIRED', "1445418107");
+            //      xhr.setRequestHeader('X-MOON-TOKEN', "9fc639a67e2ab053ff54ffbbfca2a1b7");
+
+            MOON_E = /'X-MOON-EXPIRED', "([^"]+)/.exec(v)[1];
+            MOON_T = /'X-MOON-TOKEN', "([^"]+)/.exec(v)[1]
+
             postdata = {
                 partner: /partner: (.*),/.exec(v)[1],
                 d_id: /d_id: (.*),/.exec(v)[1],
                 video_token: /video_token: '(.*)'/.exec(v)[1],
                 content_type: /content_type: '(.*)'/.exec(v)[1],
-                access_key: /access_key: '(.*)'/.exec(v)[1]
+                access_key: /access_key: '(.*)'/.exec(v)[1],
+                cd: 0
             };
+
             json = JSON.parse(showtime.httpReq(data.url.match(/http:\/\/.*?\//) + "sessions/create_session", {
                 debug: true,
+                headers: {
+                    'X-MOON-EXPIRED': MOON_E,
+                    'X-MOON-TOKEN': MOON_T,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Referer': data.url
+                },
                 postdata: postdata
             }));
+            p(json)
             result_url = "hls:" + json.manifest_m3u8;
             videoparams.sources = [{
                     url: "hls:" + json.manifest_m3u8
