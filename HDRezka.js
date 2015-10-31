@@ -466,8 +466,8 @@
             //      xhr.setRequestHeader('X-MOON-EXPIRED', "1445418107");
             //      xhr.setRequestHeader('X-MOON-TOKEN', "9fc639a67e2ab053ff54ffbbfca2a1b7");
 
-            MOON_E = /'X-MOON-EXPIRED', "([^"]+)/.exec(v)[1];
-            MOON_T = /'X-MOON-TOKEN', "([^"]+)/.exec(v)[1]
+            MOON_E = /'X-MOON-EXPIRED', "(.*?)"/.exec(v)[1];
+            MOON_T = /'X-MOON-TOKEN', "(.*?)"/.exec(v)[1];
 
             postdata = {
                 partner: /partner: (.*),/.exec(v)[1],
