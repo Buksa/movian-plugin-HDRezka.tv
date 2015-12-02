@@ -1,5 +1,5 @@
 (function(plugin) {
-    //ver 0.5.5
+    //ver 0.5.7
     var plugin_info = plugin.getDescriptor();
     var PREFIX = plugin_info.id;
     var BASE_URL = "http://hdrezka.me";
@@ -192,13 +192,6 @@
 
 
 
-            // player = /engine/ajax/getvideo.php
-            //var html = showtime.httpReq(moonwalk, {
-            //        method: "GET",
-            //        headers: {
-            //            "Referer": BASE_URL + link
-            //        }
-            //    }).toString();
             var moonwalk = player.match(/(http.*?iframe)/)[1];
             p("iframe: " + moonwalk);
             if (moonwalk) {
@@ -224,6 +217,7 @@
                 p("count seasons:" + m.length);
                 if (m.length === 0) {
                     data.url = moonwalk;
+                    data.icon = md.icon;
                     //separator = v.match(/<span class="b-sidelinks__text">\u0421\u043c\u043e\u0442\u0440\u0435\u0442\u044c ([^<]+)/)[1];
                     page.appendItem("", "separator", {
                         title: new showtime.RichText('Movie' /*separator.ucfirst()*/ + ":")
@@ -262,6 +256,7 @@
                     p("count episode: " + m2.length);
                     for (j = 0; j < m2.length; j++) {
                         data.url = moonwalk + "?season=" + m[i][1] + "&episode=" + m2[j][1];
+                        data.icon = md.icon
                         data.series = {
                             season: +m[i][1],
                             episode: m2[j][1]
@@ -454,21 +449,6 @@
             var postdata = {};
             postdata = /post\('\/sessions\/create_session', \{([^\}]+)/.exec(v)[1];
             p(postdata);
-            //           $.post('/sessions/create_session', {
-            //  partner: 157,
-            //  d_id: 15820,
-            //  video_token: 'd7774760e49fa5ca',
-            //  content_type: 'movie',
-            //  access_key: '0fb74eb4b2c16d45fe',
-            //  cd: condition_detected ? 1 : 0
-            //}).success(function(video_url)
-
-            //      xhr.setRequestHeader('X-MOON-EXPIRED', "1445418107");
-            //      xhr.setRequestHeader('X-MOON-TOKEN', "9fc639a67e2ab053ff54ffbbfca2a1b7");
-
-            MOON_E = /'X-MOON-EXPIRED', "(.*?)"/.exec(v)[1];
-            MOON_T = /'X-MOON-TOKEN', "(.*?)"/.exec(v)[1];
-
             postdata = {
                 partner: /partner: (.*),/.exec(v)[1],
                 d_id: /d_id: (.*),/.exec(v)[1],
@@ -477,14 +457,17 @@
                 access_key: /access_key: '(.*)'/.exec(v)[1],
                 cd: 0
             };
-
+            p(postdata);
+            var ContentData = Duktape.enc('base64', /(\d{10}\.[a-f\d]+)/.exec(v)[1])
             json = JSON.parse(showtime.httpReq(data.url.match(/http:\/\/.*?\//) + "sessions/create_session", {
                 debug: true,
                 headers: {
-                    'X-MOON-EXPIRED': MOON_E,
-                    'X-MOON-TOKEN': MOON_T,
+                    'Referer': data.url,
+                    'Host': 'moonwalk.cc',
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64; rv:42.0) Gecko/20100101 Firefox/42.0',
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                    'Content-Data': ContentData,
                     'X-Requested-With': 'XMLHttpRequest',
-                    'Referer': data.url
                 },
                 postdata: postdata
             }));
@@ -496,7 +479,8 @@
             ];
             video = "videoparams:" + JSON.stringify(videoparams);
             page.appendItem(video, "video", {
-                title: "[Auto]" + " | " + (data.eng_title ? data.eng_title : data.title)
+                title: "[Auto]" + " | " + (data.eng_title ? data.eng_title : data.title),
+                icon: data.icon
             });
             var video_urls = showtime.httpReq(json.manifest_m3u8).toString();
             p(video_urls);
@@ -509,7 +493,8 @@
                 ];
                 video = "videoparams:" + JSON.stringify(videoparams);
                 page.appendItem(video, "video", {
-                    title: "[" + video_urls[i][1] + "]" + " | " + (data.eng_title ? data.eng_title : data.title)
+                    title: "[" + video_urls[i][1] + "]" + " | " + (data.eng_title ? data.eng_title : data.title),
+                    icon: data.icon
                 });
             }
         }
