@@ -1,5 +1,5 @@
 (function(plugin) {
-    //ver 0.5.7
+    //ver 0.5.8
     var plugin_info = plugin.getDescriptor();
     var PREFIX = plugin_info.id;
     var BASE_URL = "http://hdrezka.me";
@@ -174,8 +174,9 @@
             }
 
             //<iframe id="cdn-player" src="http://cdn2hd.xyz/serial/7df3102bd447c75c7e71e3ef219faf23/iframe?nocontrols=1&amp;season=1&amp;episode=1" width="640" height="360" frameborder="0" allowfullscreen=""></iframe>
-            if (/<iframe id="cdn-player" src="([^"]+)/.test(v)) {
-                player = /<iframe id="cdn-player" src="([^"]+)/.exec(v)
+            //<iframe id="cdn-player" src="http://s1.cdn2hd.xyz/video/7e5c8fa1cb3760b5/iframe?nocontrols=1&season=&episode=" width="640" height="360" frameborder="0" allowfullscreen=""></iframe>
+            if (/http:\/\/\w+.\w+.\w+\/video\/[a-f\d]+\/iframe/.test(v)) {
+                player = /http:\/\/\w+.\w+.\w+\/video\/[a-f\d]+\/iframe/.exec(v)
                 p(player)
             } else {
                 player = JSON.parse(showtime.httpReq(BASE_URL + "/engine/ajax/getvideo.php", {
@@ -193,6 +194,7 @@
 
 
             var moonwalk = player.match(/(http.*?iframe)/)[1];
+            p('zzzzzzzzzzzzzzzzzzzzzzzz');
             p("iframe: " + moonwalk);
             if (moonwalk) {
                 var html = showtime.httpReq(moonwalk, {
