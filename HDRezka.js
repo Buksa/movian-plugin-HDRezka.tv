@@ -1,4 +1,4 @@
-//ver 0.6.1
+//ver 0.6.2
 var plugin = JSON.parse(Plugin.manifest);
 
 var PREFIX = plugin.id;
@@ -440,7 +440,7 @@ function mediaInfo(page, link, perevod) {
     getTitles(resp, function(titleList) {
       for (var i = 0; i < titleList.length; i++) {
         item = titleList[i];
-        page.appendItem(PREFIX + ":mediaInfo:" + item.url, "video", {
+        page.appendItem(PREFIX + ":mediaInfo:" + item.url+':null', "video", {
           title: item.title,
           year: parseInt(item.year, 10),
           rating: parseInt(item.rating, 10),
@@ -747,7 +747,7 @@ function play(page, data) {
     video = "videoparams:" + JSON.stringify(videoparams);
     page.appendItem(video, "video", {
       title: "[Auto]" + " | " + title,
-      icon: data.icon
+      icon: cover
     });
     var video_urls = http.request(json.manifest_m3u8)
       .toString();
