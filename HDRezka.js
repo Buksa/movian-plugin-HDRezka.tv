@@ -1,4 +1,4 @@
-//ver 0.6.3
+//ver 0.6.4
 var plugin = JSON.parse(Plugin.manifest);
 
 var PREFIX = plugin.id;
@@ -48,8 +48,8 @@ settings.createBool("debug", "Debug", false, function(v) {
 var blue = "6699CC",
     orange = "FFA500";
 
-io.httpInspectorCreate("http.*hdrezka.*", function(req) {
-    req.setHeader("User-Agent", "Mozilla/5.0 (Linux; Android 4.4.2; Nexus 4 Build/KOT49H) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.114 Mobile Safari/537.36");
+io.httpInspectorCreate('http.*\\.hdrezka.me.*', function(req) {
+    req.setHeader('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:31.0) Gecko/20100101 Firefox/31.0');
     req.setHeader("Accept-Encoding", "gzip, deflate");
 });
 
@@ -106,7 +106,6 @@ function start_block(page, href, title) {
     }
     page.appendItem(PREFIX + ":sort:" + href, "directory", {
         title: "\u0414\u0430\u043b\u044c\u0448\u0435 \u0431\u043e\u043b\u044c\u0448\u0435" + " \u25ba",
-        icon: LOGO
     });
     page.appendItem(PREFIX + ":select:" + href, "directory", {
         title: "\u0416\u0430\u043d\u0440\u044b \u0438 \u041a\u0430\u0442\u0435\u0433\u043e\u0440\u0438\u0438" + " \u25ba"
