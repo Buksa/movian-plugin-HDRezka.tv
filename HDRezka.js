@@ -1,4 +1,4 @@
-//ver 0.6.4
+//ver 0.6.5
 var plugin = JSON.parse(Plugin.manifest);
 
 var PREFIX = plugin.id;
@@ -12,6 +12,8 @@ var http = require("showtime/http");
 var html = require("showtime/html");
 var io = require("native/io");
 var popup = require("native/popup");
+
+var UA = 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36';
 
 
 var tos = "The developer has no affiliation with the sites what so ever.\n";
@@ -48,8 +50,8 @@ settings.createBool("debug", "Debug", false, function(v) {
 var blue = "6699CC",
     orange = "FFA500";
 
-io.httpInspectorCreate('http.*\\.hdrezka.me.*', function(req) {
-    req.setHeader('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:31.0) Gecko/20100101 Firefox/31.0');
+io.httpInspectorCreate('http.*hdrezka.me.*', function(req) {
+    req.setHeader('User-Agent', UA);
     req.setHeader("Accept-Encoding", "gzip, deflate");
 });
 
@@ -89,7 +91,12 @@ function start_block(page, href, title) {
     page.appendItem("", "separator", {
         title: title
     });
-    resp = http.request(BASE_URL + href)
+    resp = http.request(BASE_URL + href, {
+        headers: {
+            'User-Agent': UA
+        },
+        debug: service.debug
+    })
         .toString();
     //dom = html.parse(v);
     var myRe = /data-url="(http:\/\/hdrezka.me.+?)"[\S\s]+?<img src="([^"]+)[\S\s]+?item-link[\S\s]+?">([^<]+)[\S\s]+?<div>(.+?)<\/div>/g;
@@ -135,15 +142,18 @@ function sort(page, href) {
 }
 
 function index(page, href, filter) {
+
+
     var urlData, offset;
     offset = 1;
     page.metadata.logo = LOGO;
     resp = http.request(BASE_URL + href, {
         args: {
-            filter: filter
-        }
-    })
-        .toString();
+            'filter': filter
+        },
+        debug: service.debug
+    }).toString();
+    p(BASE_URL + href + '?filter=' + filter)
     var dom = html.parse(resp);
     page.metadata.title = PREFIX + " | " + dom.root.getElementByTagName("title")[0].textContent.replace("\u0421\u043c\u043e\u0442\u0440\u0435\u0442\u044c ", "")
         .replace(" \u0432 720p hd", ".");
@@ -153,7 +163,7 @@ function index(page, href, filter) {
 
     function loader() {
         p("loader start");
-        page.haveMore(false);
+        //page.haveMore(false);
         setTimeout(function() {
             p(BASE_URL + href + "page/" + offset + "/");
             urlData = http.request(BASE_URL + href + "page/" + offset + "/", {
@@ -162,6 +172,9 @@ function index(page, href, filter) {
                 noFail: true,
                 args: {
                     filter: filter
+                },
+                headers: {
+                    'User-Agent': UA
                 }
             });
             if (urlData.statuscode === 404) {
@@ -187,10 +200,11 @@ function index(page, href, filter) {
             p("loader stop");
         }, 2E3);
     }
+    //page.paginator = loader;
+    loader();
+    page.asyncPaginator = loader;
     page.type = "directory";
-    page.paginator = loader;
-    // page.asyncPaginator = loader;
-    // loader();
+    page.loading = false;
 }
 
 function getTitles(response, callback) {
@@ -290,11 +304,11 @@ function mediaInfo(page, link, perevod) {
             rating: +md.rating * 10
         });
     } else {
-        page.appendItem("youtube:searcher:video:" + title_year+ ' трейлер', "directory", {
+        page.appendItem("youtube:search:" + title_year + ' трейлер', "directory", {
             title: "\u043d\u0430\u0439\u0442\u0438 \u0442\u0440\u0435\u0439\u043b\u0435\u0440 \u043d\u0430 YouTube"
         });
     }
-//get video by id
+    //get video by id
     if (/translator_id/.test(perevod)) {
         v = http.request("http://hdrezka.me/engine/ajax/getcdnvideo.php", {
             method: "POST",
@@ -389,7 +403,7 @@ function mediaInfo(page, link, perevod) {
         p("zzzzzzzzzzzzzzzzzzzzz");
     }
 
-//spisok perevodov
+    //spisok perevodov
     if (content.getElementByClassName("b-translators__title")[0]) {
         p(content.getElementByClassName("b-translators__title")[0].textContent);
         page.appendItem("", "separator", {
@@ -462,8 +476,8 @@ function select(page, url) {
     try {
         page.appendItem(PREFIX + ":start", "directory", {
             title: "\u041d\u0430 \u043d\u0430\u0447\u0430\u043b\u044c\u043d\u0443\u044e \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0443",
-            description: "\u041d\u0430 \u043d\u0430\u0447\u0430\u043b\u044c\u043d\u0443\u044e \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0443",
-            icon: LOGO
+            description: "\u041d\u0430 \u043d\u0430\u0447\u0430\u043b\u044c\u043d\u0443\u044e \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0443"
+
         });
         p(resp);
         var myRe = new RegExp('href="(' + url.match(/\/.+?\//) + '\\w+/)">(.+?)</a>', "g");
