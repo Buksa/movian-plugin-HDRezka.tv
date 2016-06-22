@@ -1,4 +1,4 @@
-//ver 0.6.5
+//ver 0.6.6
 var plugin = JSON.parse(Plugin.manifest);
 
 var PREFIX = plugin.id;
@@ -243,7 +243,7 @@ function SEASON(page, data) {
         method: "GET",
         headers: {
             "User-Agent": "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.6) Gecko/20100627 Firefox/3.6.6",
-            //"Referer": link
+            "Referer": data.Referer
 
         }
     })
@@ -276,6 +276,7 @@ function mediaInfo(page, link, perevod) {
     var resp = http.request(link, {
         debug: service.debug
     });
+    p(link)
     p("perevod" + perevod);
     var dom = html.parse(resp);
     p(link.match(/\d+/)
@@ -285,6 +286,7 @@ function mediaInfo(page, link, perevod) {
     var md = {},
         data = {};
     data.id = +link.match(/\d+/);
+    data.Referer = link;
     title_year = MetaTag(dom, "og:title");
     cover = MetaTag(dom, "og:image");
     page.metadata.title = title_year;
@@ -320,7 +322,7 @@ function mediaInfo(page, link, perevod) {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36",
                 "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
                 "Accept": "*/*",
-                "Referer": link,
+                "Referer": data.Referer,
                 "X-Requested-With": "XMLHttpRequest"
             },
             postdata: perevod
