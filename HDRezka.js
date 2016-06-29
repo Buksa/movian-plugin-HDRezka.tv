@@ -1,4 +1,4 @@
-//ver 0.6.6
+//ver 0.6.7
 var plugin = JSON.parse(Plugin.manifest);
 
 var PREFIX = plugin.id;
@@ -282,6 +282,7 @@ function mediaInfo(page, link, perevod) {
     p(link.match(/\d+/)
         .toString());
     id = link.match(/\d+/);
+    var cdnplayer = dom.root.getElementById('cdn-player').attributes.getNamedItem("src").value.match(/http:\/\/[^\/]+/) || null
     var content = dom.root.getElementByClassName("b-content__main")[0];
     var md = {},
         data = {};
@@ -353,9 +354,9 @@ function mediaInfo(page, link, perevod) {
         }
     } else {
         data.url = content.getElementById("player").getElementByTagName("iframe")[0].attributes.getNamedItem("src").value;
-        p(content.getElementById("player").getElementByTagName("iframe")[0].attributes.getNamedItem("src").value);
     }
     p("zzzzzzzzzzzzzzzzzzzzz");
+    data.url = cdnplayer+data.url.match(/\/video.*|\/serial.*/)
     p("iframe AKA data.url:" + data.url);
     p("zzzzzzzzzzzzzzzzzzzzz");
     if (/serial/.test(data.url)) {
