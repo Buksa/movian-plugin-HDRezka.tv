@@ -586,6 +586,7 @@ function play(page, data) {
         var params = "partner=" + partner + "&d_id=" + request + "&video_token=" + video_token + "&content_type=" + content_type + "&access_key=" + access_key + "&cd=1";
         p(params);
         var url1 = data.url.match(/http:\/\/.*?\//)
+            .toString() + "sessions/create_new";
         var responseText = http.request(url1, {
             debug: 1,
             headers: {
