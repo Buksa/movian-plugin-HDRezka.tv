@@ -1,4 +1,4 @@
-//ver 0.6.7
+//ver 0.6.8
 var plugin = JSON.parse(Plugin.manifest);
 
 var PREFIX = plugin.id;
@@ -586,20 +586,20 @@ function play(page, data) {
         var params = "partner=" + partner + "&d_id=" + request + "&video_token=" + video_token + "&content_type=" + content_type + "&access_key=" + access_key + "&cd=1";
         p(params);
         var url1 = data.url.match(/http:\/\/.*?\//)
-            .toString() + "sessions/create_session";
         var responseText = http.request(url1, {
             debug: 1,
             headers: {
-                "Accept-Encoding": "identity",
-                "Accept-Language": "en-us,en;q=0.5",
-                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                "User-Agent": "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.6) Gecko/20100627 Firefox/3.6.6",
-                "Accept-Charset": "ISO-8859-1,utf-8;q=0.7,*;q=0.7",
-                "X-CSRF-Token": csrftoken,
-                "Content-Data": content,
-                "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-                "X-Requested-With": "XMLHttpRequest",
-                "Connection": "close"
+              "Accept": '*/*',
+              "Accept-Encoding": 'gzip, deflate',
+              "Accept-Language": 'en-US,en;q=0.8,zh;q=0.6,zh-CN;q=0.4,zh-TW;q=0.2,ru;q=0.2',
+              "Cache-Control": 'no-cache',
+              "Connection": 'keep-alive',
+              "Content-Type": 'application/x-www-form-urlencoded; charset=UTF-8',
+              "Encoding-Pool": content,
+              "Referer":data.url.match(/http:\/\/.+?iframe/),
+              "User-Agent": 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36',
+              "X-CSRF-Token": csrftoken,
+              "X-Requested-With": "XMLHttpRequest",
             },
             postdata: params
         })
