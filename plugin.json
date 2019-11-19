@@ -1,15 +1,16 @@
 {
     "type": "ecmascript",
-    "id": "HDRezka",
     "apiversion": 2,
+    "id": "HDRezka",
     "file": "HDRezka.js",
-    "showtimeVersion": "4.9",
-    "version": "0.6.8",
+    "showtimeVersion": "5",
+    "version": "2.3.13",
+    "downloadURL": "http://bit.ly/2BSoxRf",
     "author": "Buksa",
     "title": "HDRezka",
-    "icon": "logo.png",
+    "icon": "HDRezka.png",
+    "category": "video",
     "synopsis": "HDRezka - онлайн фильмы в хорошем качестве",
     "description": "<p>HDRezka - plugin is the integration of the website <a href=\"http://hdrezka.me\">HDRezka.me</a> into Movian",
-    "category": "video",
     "homepage": "https://github.com/Buksa/movian-plugin-HDRezka.tv"
 }
